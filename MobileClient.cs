@@ -179,8 +179,8 @@ namespace GoogleMusic
             return modified;
         }
 
-		
-		public Playlists GetPlaylists(DateTime updateFrom)
+        
+        public Playlists GetPlaylists(DateTime updateFrom)
         {
             Playlists playlists;
 
@@ -258,7 +258,7 @@ namespace GoogleMusic
             return playlists;
         }
 
-		public bool UpdatePlaylists(ref Playlists playlists)
+        public bool UpdatePlaylists(ref Playlists playlists)
         {
             bool modified = false;
 
@@ -374,12 +374,12 @@ namespace GoogleMusic
             return items;
         }
 
-		public enum StreamQuality
-		{
-			hi,
-			med,
-			low
-		}
+        public enum StreamQuality
+        {
+            hi,
+            med,
+            low
+        }
 
 
         public StreamUrl GetStreamUrl(string track_id, ulong device_id, StreamQuality quality = StreamQuality.hi)
@@ -482,117 +482,162 @@ namespace GoogleMusic
             return response;
         }
 
-		public Stations GetStations(DateTime updateFrom)
-		{
-			Stations stations;
+        public Stations GetStations(DateTime updateFrom)
+        {
+            Stations stations;
 
-			string response = GoogleMusicService(Service.radio_station, null, updateFrom);
+            string response = GoogleMusicService(Service.radio_station, null, updateFrom);
 
-			if (String.IsNullOrEmpty(response))
-			{
-				stations = null;
-			}
-			else
-			{
-				Stationfeed stationfeed = Json.Deserialize<Stationfeed>(response);
+            if (String.IsNullOrEmpty(response))
+            {
+                stations = null;
+            }
+            else
+            {
+                Stationfeed stationfeed = Json.Deserialize<Stationfeed>(response);
 
-				if (stationfeed.data == null) return new Stations();
+                if (stationfeed.data == null) return new Stations();
 
-				stations = stationfeed.data.items;
-			}
+                stations = stationfeed.data.items;
+            }
 
-			return stations;
-		}
+            return stations;
+        }
 
-		public Stations GetAllStations()
-		{
-			Stations stations = GetStations(new DateTime());
+        public Stations GetAllStations()
+        {
+            Stations stations = GetStations(new DateTime());
 
-			if (stations != null)
-			{
-				stations = new Stations(stations.FindAll(p => p.deleted == false));
-				stations.lastUpdatedTimestamp = DateTime.Now;
-			}
-			return stations;
-		}
+            if (stations != null)
+            {
+                stations = new Stations(stations.FindAll(p => p.deleted == false));
+                stations.lastUpdatedTimestamp = DateTime.Now;
+            }
+            return stations;
+        }
 
-		public bool UpdateStationEntries(Station station, int numEntries)
-		{
-			bool modified = false;
+        public bool UpdateStationEntries(Station station, int numEntries)
+        {
+            bool modified = false;
 
-			if (station != null)
-			{
-				string jsonString = @"{""contentFilter"": 1,""stations"": [{" + @"""numEntries"":" + numEntries + @",""radioId"": """ + station.id.ToString() + @""",""recentlyPlayed"": """"" + @"}]}";
+            if (station != null)
+            {
+                string jsonString = @"{""contentFilter"": 1,""stations"": [{" + @"""numEntries"":" + numEntries + @",""radioId"": """ + station.id.ToString() + @""",""recentlyPlayed"": """"" + @"}]}";
 
-				string response = GoogleMusicService(Service.radio_stationfeed, jsonString);
+                string response = GoogleMusicService(Service.radio_stationfeed, jsonString);
 
-				if (!String.IsNullOrEmpty(response))
-				{
-					Stentryfeed stentryfeed = Json.Deserialize<Stentryfeed>(response);
+                if (!String.IsNullOrEmpty(response))
+                {
+                    Stentryfeed stentryfeed = Json.Deserialize<Stentryfeed>(response);
 
-					if (stentryfeed.data != null)
-					{
-						station.tracks = stentryfeed.data.stations[0].tracks;
-						modified = true;
-					}
-				}
-			}
+                    if (stentryfeed.data != null)
+                    {
+                        station.tracks = stentryfeed.data.stations[0].tracks;
+                        modified = true;
+                    }
+                }
+            }
 
-			return modified;
-		}
+            return modified;
+        }
 
-		public Genres GetGenres(string parentGenreID = null)
-		{
-			Genres genres;
-			string parameters = "?alt=json";
-			string response = "";
+        public Genres GetGenres(string parentGenreID = null)
+        {
+            Genres genres;
+            string parameters = "?alt=json";
+            string response = "";
 
-			if (parentGenreID != null)
-			{
-				parameters += @"&parent-genre=" + parentGenreID;
-			}
+            if (parentGenreID != null)
+            {
+                parameters += @"&parent-genre=" + parentGenreID;
+            }
 
-			if (!LoginStatus)
-			{
-				ThrowError("Not logged in: Get Genres failed!");
-				return null;
-			}
+            if (!LoginStatus)
+            {
+                ThrowError("Not logged in: Get Genres failed!");
+                return null;
+            }
 
-			Dictionary<string, string> header = new Dictionary<string, string>();
-			header.Add("Authorization", String.Format("GoogleLogin Auth={0}", _credentials.Auth));
+            Dictionary<string, string> header = new Dictionary<string, string>();
+            header.Add("Authorization", String.Format("GoogleLogin Auth={0}", _credentials.Auth));
 
-			try
-			{
-				response = httpResponse(httpGetRequest(_sjurl + "explore/genres"+ parameters, header));
-			}
-			catch (WebException error)
-			{
-				response = null;
-				ThrowError("Get Genres failed!", error);
-			}
+            try
+            {
+                response = httpResponse(httpGetRequest(_sjurl + "explore/genres"+ parameters, header));
+            }
+            catch (WebException error)
+            {
+                response = null;
+                ThrowError("Get Genres failed!", error);
+            }
 
-			if (String.IsNullOrEmpty(response))
-			{
-				genres = null;
-			}
-			else
-			{
-				Genrefeed stationfeed = Json.Deserialize<Genrefeed>(response);
+            if (String.IsNullOrEmpty(response))
+            {
+                genres = null;
+            }
+            else
+            {
+                Genrefeed stationfeed = Json.Deserialize<Genrefeed>(response);
 
-				if (stationfeed.genres == null) return new Genres();
+                if (stationfeed.genres == null) return new Genres();
 
-				genres = stationfeed.genres;
-			}
+                genres = stationfeed.genres;
+            }
 
-			return genres;
-		}
+            return genres;
+        }
+
+        public List<SearchResult> SearchAllAccess(string query, int max_results=50)
+        {
+            List<SearchResult> result;
+            string parameters = "?alt=json";
+            string response = "";
+
+
+            parameters += @"&q=" + query;
+            parameters += @"&max-results=" + max_results.ToString();
+
+            if (!LoginStatus)
+            {
+                ThrowError("Not logged in: Search failed!");
+                return null;
+            }
+
+            Dictionary<string, string> header = new Dictionary<string, string>();
+            header.Add("Authorization", String.Format("GoogleLogin Auth={0}", _credentials.Auth));
+
+            try
+            {
+                response = httpResponse(httpGetRequest(_sjurl + "query" + parameters, header));
+            }
+            catch (WebException error)
+            {
+                response = null;
+                ThrowError("Search failed!", error);
+            }
+
+            if (String.IsNullOrEmpty(response))
+            {
+                result = null;
+            }
+            else
+            {
+                SearchResultfeed stationfeed = Json.Deserialize<SearchResultfeed>(response);
+
+                if (stationfeed.entries == null) return new List<SearchResult>();
+
+                result = stationfeed.entries;
+            }
+
+            return result;
+        }
 
 
 
-		#endregion
+        #endregion
 
 
-		[DataContract]
+        [DataContract]
         private class Trackfeed
         {
             [DataMember]
@@ -666,57 +711,68 @@ namespace GoogleMusic
             public PlaylistEntrylist playlistEntry { get; set; }
         }
 
-		[DataContract]
-		private class Stationfeed
-		{
-			[DataMember]
-			internal string kind { get; set; }
-			[DataMember]
-			internal Data data { get; set; }
+        [DataContract]
+        private class Stationfeed
+        {
+            [DataMember]
+            internal string kind { get; set; }
+            [DataMember]
+            internal Data data { get; set; }
 
-			[DataContract]
-			internal class Data
-			{
-				[DataMember]
-				internal Stations items { get; set; }
-			}
-		}
+            [DataContract]
+            internal class Data
+            {
+                [DataMember]
+                internal Stations items { get; set; }
+            }
+        }
 
-		[DataContract]
-		private class Stentryfeed
-		{
-			[DataMember]
-			public string kind { get; set; }
-			[DataMember]
-			public Data data { get; set; }
+        [DataContract]
+        private class Stentryfeed
+        {
+            [DataMember]
+            public string kind { get; set; }
+            [DataMember]
+            public Data data { get; set; }
 
-			[DataContract]
-			public class Data
-			{
-				[DataMember]
-				public Stations stations { get; set; }
-			}
-		}
+            [DataContract]
+            public class Data
+            {
+                [DataMember]
+                public Stations stations { get; set; }
+            }
+        }
 
-		[DataContract]
-		private class Genrefeed
-		{
-			[DataMember]
-			internal string kind { get; set; }
-			[DataMember]
-			internal Genres genres { get; set; }
-		}
+        [DataContract]
+        private class Genrefeed
+        {
+            [DataMember]
+            internal string kind { get; set; }
+            [DataMember]
+            internal Genres genres { get; set; }
+        }
+
+        [DataContract]
+        private class SearchResultfeed
+        {
+            [DataMember]
+            internal string kind { get; set; }
+            [DataMember]
+            internal List<SearchResult> entries { get; set; }
+            [DataMember]
+            internal List<string> clusterOrder { get; set; }
+        }
 
 
-		private enum Service
+        private enum Service
         {
             trackfeed,
             playlistfeed,
             plentryfeed,
             plentries_shared,
-			radio_station,
-			radio_stationfeed
-		}
+            radio_station,
+            radio_stationfeed
+        }
 
     }
 

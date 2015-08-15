@@ -369,7 +369,7 @@ namespace GoogleMusic
     #endregion
 
     #region Radio
-
+    [DataContract]
     public class DescriptionAttribution
     {
         [DataMember]
@@ -382,6 +382,25 @@ namespace GoogleMusic
         public string kind { get; set; }
         [DataMember]
         public string license_title { get; set; }
+    }
+
+    [DataContract]
+    public class Artist
+    {
+        [DataMember]
+        public string artistId { get; set; }
+        [DataMember]
+        public string artistArtRef { get; set; }
+        [DataMember]
+        public string name { get; set; }
+        [DataMember]
+        public DescriptionAttribution artist_bio_attribution { get; set; }
+        [DataMember]
+        public int total_albums { get; set; }
+        [DataMember]
+        public string kind { get; set; }
+        [DataMember]
+        public string artistBio { get; set; }
     }
 
     [DataContract]
@@ -435,24 +454,6 @@ namespace GoogleMusic
                 public Track track { get; set; }
                 [DataMember]
                 public Artist artist { get; set; }
-                [DataContract]
-                public class Artist
-                {
-                    [DataMember]
-                    public string artistId { get; set; }
-                    [DataMember]
-                    public string artistArtRef { get; set; }
-                    [DataMember]
-                    public string name { get; set; }
-                    [DataMember]
-                    public DescriptionAttribution artist_bio_attribution { get; set; }
-                    [DataMember]
-                    public int total_albums { get; set; }
-                    [DataMember]
-                    public string kind { get; set; }
-                    [DataMember]
-                    public string artistBio { get; set; }
-                }
                 [DataMember]
                 public string kind { get; set; }
             }
@@ -525,6 +526,27 @@ namespace GoogleMusic
 
         public Genres(IEnumerable<Genre> genre) : base(genre)
         { }
+    }
+
+    [DataContract]
+    public class SearchResult
+    {
+        [DataMember]
+        public string type { get; set; }
+        [DataMember]
+        public Album album { get; set; }
+        [DataMember]
+        public Artist artist { get; set; }
+        [DataMember]
+        public Track track { get; set; }
+        [DataMember]
+        public Station station { get; set; }
+        [DataMember]
+        public double score { get; set; }
+        [DataMember]
+        public bool best_result { get; set; }
+        [DataMember]
+        public bool navigational_result { get; set; }
     }
 
 
