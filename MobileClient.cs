@@ -433,8 +433,15 @@ namespace GoogleMusic
             return items;
         }
 
+		public enum StreamQuality
+		{
+			hi,
+			med,
+			low
+		}
 
-        public StreamUrl GetStreamUrl(string track_id, ulong device_id)
+
+        public StreamUrl GetStreamUrl(string track_id, ulong device_id, StreamQuality quality = StreamQuality.hi)
         {
             HttpWebRequest request;
             StreamUrl streamUrl = new StreamUrl();
@@ -463,9 +470,9 @@ namespace GoogleMusic
             try
             {
                 if (track_id.IsGuid())
-                    request = httpGetRequest("https://android.clients.google.com/music/mplay" + String.Format("?songid={0}&opt=hi&net=wifi&pt=e&slt={1}&sig={2}", track_id, salt, sig));
+                    request = httpGetRequest("https://android.clients.google.com/music/mplay" + String.Format("?songid={0}&opt={1}&net=mob&pt=e&slt={2}&sig={2}", track_id,Enum.GetName(typeof(StreamQuality),quality), salt, sig));
                 else
-                    request = httpGetRequest("https://android.clients.google.com/music/mplay" + String.Format("?mjck={0}&opt=hi&net=wifi&pt=e&slt={1}&sig={2}", track_id, salt, sig));
+                    request = httpGetRequest("https://android.clients.google.com/music/mplay" + String.Format("?mjck={0}&opt={1}&net=mob&pt=e&slt={2}&sig={3}", track_id, Enum.GetName(typeof(StreamQuality), quality), salt, sig));
                 request.Headers["Authorization"] = String.Format("GoogleLogin Auth={0}", _credentials.Auth);
                 request.Headers["X-Device-ID"] = device_id.ToString();
                 request.AllowAutoRedirect = false;
