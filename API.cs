@@ -183,7 +183,7 @@ namespace GoogleMusic
 
         #region HttpRequests
 
-        protected HttpWebRequest httpGetRequest(string url)
+        protected HttpWebRequest httpGetRequest(string url, Dictionary<string, string> header = null)
         {
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
             request.Method = "GET";
@@ -192,7 +192,13 @@ namespace GoogleMusic
             request.Proxy = Proxy;
             request.UserAgent = _useragent;
 
-            return request;
+			if (header != null)
+			{
+				foreach (string key in header.Keys)
+					request.Headers[key] = header[key];
+			}
+
+			return request;
         }
 
 

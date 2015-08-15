@@ -179,66 +179,7 @@ namespace GoogleMusic
             return modified;
         }
 
-		public Stations GetStations(DateTime updateFrom)
-		{
-			Stations stations;
-
-			string response = GoogleMusicService(Service.radio_station, null, updateFrom);
-
-			if (String.IsNullOrEmpty(response))
-			{
-				stations = null;
-			}
-			else
-			{
-				Stationfeed stationfeed = Json.Deserialize<Stationfeed>(response);
-
-				if (stationfeed.data == null) return new Stations();
-
-				stations = stationfeed.data.items;
-			}
-
-			return stations;
-		}
-
-		public Stations GetAllStations()
-		{
-			Stations stations = GetStations(new DateTime());
-
-			if (stations != null)
-			{
-				stations = new Stations(stations.FindAll(p => p.deleted == false));
-				stations.lastUpdatedTimestamp = DateTime.Now;
-			}
-			return stations;
-		}
-
-		public bool UpdateStationEntries(Station station, int numEntries)
-		{
-			bool modified = false;
-
-			if (station != null)
-			{
-				string jsonString = @"{""contentFilter"": 1,""stations"": [{" + @"""numEntries"":" + numEntries + @",""radioId"": """ + station.id.ToString() + @""",""recentlyPlayed"": """"" + @"}]}";
-
-				string response = GoogleMusicService(Service.radio_stationfeed, jsonString);
-
-				if (!String.IsNullOrEmpty(response))
-				{
-					Stentryfeed stentryfeed = Json.Deserialize<Stentryfeed>(response);
-
-					if (stentryfeed.data != null)
-					{
-						station.tracks = stentryfeed.data.stations[0].tracks;
-						modified = true;
-					}
-				}
-			}
-
-			return modified;
-		}
-
-
+		
 		public Playlists GetPlaylists(DateTime updateFrom)
         {
             Playlists playlists;
@@ -541,10 +482,117 @@ namespace GoogleMusic
             return response;
         }
 
-        #endregion
+		public Stations GetStations(DateTime updateFrom)
+		{
+			Stations stations;
+
+			string response = GoogleMusicService(Service.radio_station, null, updateFrom);
+
+			if (String.IsNullOrEmpty(response))
+			{
+				stations = null;
+			}
+			else
+			{
+				Stationfeed stationfeed = Json.Deserialize<Stationfeed>(response);
+
+				if (stationfeed.data == null) return new Stations();
+
+				stations = stationfeed.data.items;
+			}
+
+			return stations;
+		}
+
+		public Stations GetAllStations()
+		{
+			Stations stations = GetStations(new DateTime());
+
+			if (stations != null)
+			{
+				stations = new Stations(stations.FindAll(p => p.deleted == false));
+				stations.lastUpdatedTimestamp = DateTime.Now;
+			}
+			return stations;
+		}
+
+		public bool UpdateStationEntries(Station station, int numEntries)
+		{
+			bool modified = false;
+
+			if (station != null)
+			{
+				string jsonString = @"{""contentFilter"": 1,""stations"": [{" + @"""numEntries"":" + numEntries + @",""radioId"": """ + station.id.ToString() + @""",""recentlyPlayed"": """"" + @"}]}";
+
+				string response = GoogleMusicService(Service.radio_stationfeed, jsonString);
+
+				if (!String.IsNullOrEmpty(response))
+				{
+					Stentryfeed stentryfeed = Json.Deserialize<Stentryfeed>(response);
+
+					if (stentryfeed.data != null)
+					{
+						station.tracks = stentryfeed.data.stations[0].tracks;
+						modified = true;
+					}
+				}
+			}
+
+			return modified;
+		}
+
+		public Genres GetGenres(string parentGenreID = null)
+		{
+			Genres genres;
+			string parameters = "?alt=json";
+			string response = "";
+
+			if (parentGenreID != null)
+			{
+				parameters += @"&parent-genre=" + parentGenreID;
+			}
+
+			if (!LoginStatus)
+			{
+				ThrowError("Not logged in: Get Genres failed!");
+				return null;
+			}
+
+			Dictionary<string, string> header = new Dictionary<string, string>();
+			header.Add("Authorization", String.Format("GoogleLogin Auth={0}", _credentials.Auth));
+
+			try
+			{
+				response = httpResponse(httpGetRequest(_sjurl + "explore/genres"+ parameters, header));
+			}
+			catch (WebException error)
+			{
+				response = null;
+				ThrowError("Get Genres failed!", error);
+			}
+
+			if (String.IsNullOrEmpty(response))
+			{
+				genres = null;
+			}
+			else
+			{
+				Genrefeed stationfeed = Json.Deserialize<Genrefeed>(response);
+
+				if (stationfeed.genres == null) return new Genres();
+
+				genres = stationfeed.genres;
+			}
+
+			return genres;
+		}
 
 
-        [DataContract]
+
+		#endregion
+
+
+		[DataContract]
         private class Trackfeed
         {
             [DataMember]
@@ -648,6 +696,15 @@ namespace GoogleMusic
 				[DataMember]
 				public Stations stations { get; set; }
 			}
+		}
+
+		[DataContract]
+		private class Genrefeed
+		{
+			[DataMember]
+			internal string kind { get; set; }
+			[DataMember]
+			internal Genres genres { get; set; }
 		}
 
 

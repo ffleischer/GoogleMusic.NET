@@ -88,7 +88,7 @@ namespace GoogleMusic
         [DataMember]
         public string id { get { _id = String.IsNullOrEmpty(_id) ? storeId : _id; return _id; } set { _id = value; } }
         [DataMember]
-    	public string clientId { get; set; }
+        public string clientId { get; set; }
         [DataMember(Name = "creationTimestamp")]
         private long _creationTimestamp { get; set; }
         [DataMember(Name = "lastModifiedTimestamp")]
@@ -134,7 +134,7 @@ namespace GoogleMusic
         [DataMember]
         public int rating { get; set; }
         [DataMember]
-    	public int estimatedSize { get; set; }
+        public int estimatedSize { get; set; }
         [DataMember]
         public string storeId { get; set; }
         [DataMember]
@@ -142,7 +142,7 @@ namespace GoogleMusic
         [DataMember]
         public List<string> artistId { get; set; }
         [DataMember]
-	    public string nid { get; set; }
+        public string nid { get; set; }
 
         public int bitrate { get; set; }
         public bool explicitType { get; set; }
@@ -299,113 +299,7 @@ namespace GoogleMusic
         }
     }
 
-	public class DescriptionAttribution
-	{
-		[DataMember]
-		public string license_url { get; set; }
-		[DataMember]
-		public string source_url { get; set; }
-		[DataMember]
-		public string source_title { get; set; }
-		[DataMember]
-		public string kind { get; set; }
-		[DataMember]
-		public string license_title { get; set; }
-	}
-
-	[DataContract]
-	public class Station : IComparable<Station>, IGoogleMusicItem
-	{
-		[DataMember]
-		public string imageUrl { get; set; }
-		[DataMember]
-		public List<Url> imageUrls { get; set; }
-
-		[DataMember]
-		public string kind { get; set; }
-		[DataMember]
-		public string name { get; set; }
-		[DataMember]
-		public bool deleted { get; set; }
-		[DataMember]
-		public string lastModifiedTimestamp { get; set; }
-		[DataMember]
-		public string recentTimestamp { get; set; }
-		[DataMember]
-		public string clientId { get; set; }
-		[DataMember]
-		public Seed seed { get; set; }
-
-		[DataContract]
-		public class Seed
-		{
-			[DataMember]
-			public string kind { get; set; }
-			[DataMember]
-			public string curatedStationId { get; set; }
-			[DataMember]
-			public string trackId { get; set; }
-			[DataMember]
-			public string genreId { get; set; }
-			[DataMember]
-			public string albumId { get; set; }
-			[DataMember]
-			public string trackLockerId { get; set; }
-			[DataMember]
-			public string seedType { get; set; }
-			[DataMember]
-			public string artistId { get; set; }
-			[DataMember]
-			public MetadataSeed metadataSeed { get; set; }
-			[DataContract]
-			public class MetadataSeed
-			{
-				[DataMember]
-				public Track track { get; set; }
-				[DataMember]
-				public Artist artist { get; set; }
-				[DataContract]
-				public class Artist
-				{
-					[DataMember]
-					public string artistId { get; set; }
-					[DataMember]
-					public string artistArtRef { get; set; }
-					[DataMember]
-					public string name { get; set; }
-					[DataMember]
-					public DescriptionAttribution artist_bio_attribution { get; set; }
-					[DataMember]
-					public int total_albums { get; set; }
-					[DataMember]
-					public string kind { get; set; }
-					[DataMember]
-					public string artistBio { get; set; }
-				}
-				[DataMember]
-				public string kind { get; set; }
-			}
-			
-		}
-		[DataMember]
-		public Tracklist tracks { get; set; }
-		[DataMember]
-		public string id { get; set; }
-
-		public override string ToString()
-		{
-			return (name != null ? name.ToString() : base.ToString());
-		}
-
-		public int CompareTo(Station other)
-		{
-			int result = id.CompareTo(other.id);
-			return result;
-		}
-	}
-
-
-	public class PlaylistEntrylist : GoogleMusicItemlist<PlaylistEntry>
+    public class PlaylistEntrylist : GoogleMusicItemlist<PlaylistEntry>
     {
         public PlaylistEntrylist() : base()
         { }
@@ -414,7 +308,7 @@ namespace GoogleMusic
         { }
     }
 
-	[DataContract]
+    [DataContract]
     public class Playlist : IGoogleMusicItem
     {
         public Playlist()
@@ -472,21 +366,175 @@ namespace GoogleMusic
         { }
     }
 
-	public class Stations : GoogleMusicItemlist<Station>
-	{
-		public Stations() : base()
-		{ }
+    #endregion
 
-		public Stations(IEnumerable<Station> stations) : base(stations)
-		{ }
-	}
+    #region Radio
 
-	#endregion
+    public class DescriptionAttribution
+    {
+        [DataMember]
+        public string license_url { get; set; }
+        [DataMember]
+        public string source_url { get; set; }
+        [DataMember]
+        public string source_title { get; set; }
+        [DataMember]
+        public string kind { get; set; }
+        [DataMember]
+        public string license_title { get; set; }
+    }
+
+    [DataContract]
+    public class Station : IComparable<Station>, IGoogleMusicItem
+    {
+        [DataMember]
+        public string imageUrl { get; set; }
+        [DataMember]
+        public List<Url> imageUrls { get; set; }
+
+        [DataMember]
+        public string kind { get; set; }
+        [DataMember]
+        public string name { get; set; }
+        [DataMember]
+        public bool deleted { get; set; }
+        [DataMember]
+        public string lastModifiedTimestamp { get; set; }
+        [DataMember]
+        public string recentTimestamp { get; set; }
+        [DataMember]
+        public string clientId { get; set; }
+        [DataMember]
+        public Seed seed { get; set; }
+
+        [DataContract]
+        public class Seed
+        {
+            [DataMember]
+            public string kind { get; set; }
+            [DataMember]
+            public string curatedStationId { get; set; }
+            [DataMember]
+            public string trackId { get; set; }
+            [DataMember]
+            public string genreId { get; set; }
+            [DataMember]
+            public string albumId { get; set; }
+            [DataMember]
+            public string trackLockerId { get; set; }
+            [DataMember]
+            public string seedType { get; set; }
+            [DataMember]
+            public string artistId { get; set; }
+            [DataMember]
+            public MetadataSeed metadataSeed { get; set; }
+            [DataContract]
+            public class MetadataSeed
+            {
+                [DataMember]
+                public Track track { get; set; }
+                [DataMember]
+                public Artist artist { get; set; }
+                [DataContract]
+                public class Artist
+                {
+                    [DataMember]
+                    public string artistId { get; set; }
+                    [DataMember]
+                    public string artistArtRef { get; set; }
+                    [DataMember]
+                    public string name { get; set; }
+                    [DataMember]
+                    public DescriptionAttribution artist_bio_attribution { get; set; }
+                    [DataMember]
+                    public int total_albums { get; set; }
+                    [DataMember]
+                    public string kind { get; set; }
+                    [DataMember]
+                    public string artistBio { get; set; }
+                }
+                [DataMember]
+                public string kind { get; set; }
+            }
+
+        }
+        [DataMember]
+        public Tracklist tracks { get; set; }
+        [DataMember]
+        public string id { get; set; }
+
+        public override string ToString()
+        {
+            return (name != null ? name.ToString() : base.ToString());
+        }
+
+        public int CompareTo(Station other)
+        {
+            int result = id.CompareTo(other.id);
+            return result;
+        }
+    }
+
+    public class Stations : GoogleMusicItemlist<Station>
+    {
+        public Stations() : base()
+        { }
+
+        public Stations(IEnumerable<Station> stations) : base(stations)
+        { }
+    }
+
+    #endregion
+
+    #region other stuff
+
+    [DataContract]
+    public class Genre : IComparable<Genre>, IGoogleMusicItem
+    {
+        [DataMember]
+        public string name { get; set; }
+        [DataMember]
+        public string id { get; set; }
+        [DataMember]
+        public string parentId { get; set; }
+        [DataMember]
+        public string kind { get; set; }
+        [DataMember]
+        public List<string> children { get; set; }
+        [DataMember]
+        public List<Url> images { get; set; }
+
+        public override string ToString()
+        {
+            return (name != null ? name.ToString() : base.ToString());
+        }
+
+        public int CompareTo(Genre other)
+        {
+            int result = id.CompareTo(other.id);
+            return result;
+        }
+
+        public bool deleted { get { return false; } set{} }
+    }
+
+    public class Genres : GoogleMusicItemlist<Genre>
+    {
+        public Genres() : base()
+        { }
+
+        public Genres(IEnumerable<Genre> genre) : base(genre)
+        { }
+    }
 
 
-	#region Album
 
-	public class Album : IGoogleMusicItem
+    #endregion
+
+
+    #region Album
+
+    public class Album : IGoogleMusicItem
     {
         private string _album;
         private string _albumArtist;
