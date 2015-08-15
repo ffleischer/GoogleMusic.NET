@@ -179,8 +179,67 @@ namespace GoogleMusic
             return modified;
         }
 
+		public Stations GetStations(DateTime updateFrom)
+		{
+			Stations stations;
 
-        public Playlists GetPlaylists(DateTime updateFrom)
+			string response = GoogleMusicService(Service.radio_station, null, updateFrom);
+
+			if (String.IsNullOrEmpty(response))
+			{
+				stations = null;
+			}
+			else
+			{
+				Stationfeed stationfeed = Json.Deserialize<Stationfeed>(response);
+
+				if (stationfeed.data == null) return new Stations();
+
+				stations = stationfeed.data.items;
+			}
+
+			return stations;
+		}
+
+		public Stations GetAllStations()
+		{
+			Stations stations = GetStations(new DateTime());
+
+			if (stations != null)
+			{
+				stations = new Stations(stations.FindAll(p => p.deleted == false));
+				stations.lastUpdatedTimestamp = DateTime.Now;
+			}
+			return stations;
+		}
+
+		public bool UpdateStationEntries(Station station, int numEntries)
+		{
+			bool modified = false;
+
+			if (station != null)
+			{
+				string jsonString = @"{""contentFilter"": 1,""stations"": [{" + @"""numEntries"":" + numEntries + @",""radioId"": """ + station.id.ToString() + @""",""recentlyPlayed"": """"" + @"}]}";
+
+				string response = GoogleMusicService(Service.radio_stationfeed, jsonString);
+
+				if (!String.IsNullOrEmpty(response))
+				{
+					Stentryfeed stentryfeed = Json.Deserialize<Stentryfeed>(response);
+
+					if (stentryfeed.data != null)
+					{
+						station.tracks = stentryfeed.data.stations[0].tracks;
+						modified = true;
+					}
+				}
+			}
+
+			return modified;
+		}
+
+
+		public Playlists GetPlaylists(DateTime updateFrom)
         {
             Playlists playlists;
 
@@ -258,8 +317,7 @@ namespace GoogleMusic
             return playlists;
         }
 
-
-        public bool UpdatePlaylists(ref Playlists playlists)
+		public bool UpdatePlaylists(ref Playlists playlists)
         {
             bool modified = false;
 
@@ -553,14 +611,48 @@ namespace GoogleMusic
             public PlaylistEntrylist playlistEntry { get; set; }
         }
 
-        
-        private enum Service
+		[DataContract]
+		private class Stationfeed
+		{
+			[DataMember]
+			internal string kind { get; set; }
+			[DataMember]
+			internal Data data { get; set; }
+
+			[DataContract]
+			internal class Data
+			{
+				[DataMember]
+				internal Stations items { get; set; }
+			}
+		}
+
+		[DataContract]
+		private class Stentryfeed
+		{
+			[DataMember]
+			public string kind { get; set; }
+			[DataMember]
+			public Data data { get; set; }
+
+			[DataContract]
+			public class Data
+			{
+				[DataMember]
+				public Stations stations { get; set; }
+			}
+		}
+
+
+		private enum Service
         {
             trackfeed,
             playlistfeed,
             plentryfeed,
-            plentries_shared
-        }
+            plentries_shared,
+			radio_station,
+			radio_stationfeed
+		}
 
     }
 

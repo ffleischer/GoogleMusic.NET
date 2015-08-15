@@ -299,8 +299,113 @@ namespace GoogleMusic
         }
     }
 
+	public class DescriptionAttribution
+	{
+		[DataMember]
+		public string license_url { get; set; }
+		[DataMember]
+		public string source_url { get; set; }
+		[DataMember]
+		public string source_title { get; set; }
+		[DataMember]
+		public string kind { get; set; }
+		[DataMember]
+		public string license_title { get; set; }
+	}
 
-    public class PlaylistEntrylist : GoogleMusicItemlist<PlaylistEntry>
+	[DataContract]
+	public class Station : IComparable<Station>, IGoogleMusicItem
+	{
+		[DataMember]
+		public string imageUrl { get; set; }
+		[DataMember]
+		public List<Url> imageUrls { get; set; }
+
+		[DataMember]
+		public string kind { get; set; }
+		[DataMember]
+		public string name { get; set; }
+		[DataMember]
+		public bool deleted { get; set; }
+		[DataMember]
+		public string lastModifiedTimestamp { get; set; }
+		[DataMember]
+		public string recentTimestamp { get; set; }
+		[DataMember]
+		public string clientId { get; set; }
+		[DataMember]
+		public Seed seed { get; set; }
+
+		[DataContract]
+		public class Seed
+		{
+			[DataMember]
+			public string kind { get; set; }
+			[DataMember]
+			public string curatedStationId { get; set; }
+			[DataMember]
+			public string trackId { get; set; }
+			[DataMember]
+			public string genreId { get; set; }
+			[DataMember]
+			public string albumId { get; set; }
+			[DataMember]
+			public string trackLockerId { get; set; }
+			[DataMember]
+			public string seedType { get; set; }
+			[DataMember]
+			public string artistId { get; set; }
+			[DataMember]
+			public MetadataSeed metadataSeed { get; set; }
+			[DataContract]
+			public class MetadataSeed
+			{
+				[DataMember]
+				public Track track { get; set; }
+				[DataMember]
+				public Artist artist { get; set; }
+				[DataContract]
+				public class Artist
+				{
+					[DataMember]
+					public string artistId { get; set; }
+					[DataMember]
+					public string artistArtRef { get; set; }
+					[DataMember]
+					public string name { get; set; }
+					[DataMember]
+					public DescriptionAttribution artist_bio_attribution { get; set; }
+					[DataMember]
+					public int total_albums { get; set; }
+					[DataMember]
+					public string kind { get; set; }
+					[DataMember]
+					public string artistBio { get; set; }
+				}
+				[DataMember]
+				public string kind { get; set; }
+			}
+			
+		}
+		[DataMember]
+		public Tracklist tracks { get; set; }
+		[DataMember]
+		public string id { get; set; }
+
+		public override string ToString()
+		{
+			return (name != null ? name.ToString() : base.ToString());
+		}
+
+		public int CompareTo(Station other)
+		{
+			int result = id.CompareTo(other.id);
+			return result;
+		}
+	}
+
+
+	public class PlaylistEntrylist : GoogleMusicItemlist<PlaylistEntry>
     {
         public PlaylistEntrylist() : base()
         { }
@@ -309,7 +414,7 @@ namespace GoogleMusic
         { }
     }
 
-    [DataContract]
+	[DataContract]
     public class Playlist : IGoogleMusicItem
     {
         public Playlist()
@@ -367,12 +472,21 @@ namespace GoogleMusic
         { }
     }
 
-    #endregion
+	public class Stations : GoogleMusicItemlist<Station>
+	{
+		public Stations() : base()
+		{ }
+
+		public Stations(IEnumerable<Station> stations) : base(stations)
+		{ }
+	}
+
+	#endregion
 
 
-    #region Album
+	#region Album
 
-    public class Album : IGoogleMusicItem
+	public class Album : IGoogleMusicItem
     {
         private string _album;
         private string _albumArtist;
